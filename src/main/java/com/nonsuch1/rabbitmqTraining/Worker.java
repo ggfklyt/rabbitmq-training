@@ -18,6 +18,7 @@ public class Worker {
         Channel channel = connection.createChannel();
 
         channel.queueDeclare(QUEUE_NAME, false, false, false, null);
+        channel.basicQos(1);
         System.out.println(" [*] Waiting for messages. To exit press CTRL+C");
 
         DeliverCallback deliverCallback = ((consumerTag, delivery) -> {
@@ -29,9 +30,10 @@ public class Worker {
                 e.printStackTrace();
             } finally {
                 System.out.println(" [x] Done");
+                channel.basicAck(delivery.getEnvelope().getDeliveryTag(), false);
             }
         });
-        boolean autoAck = true;
+        boolean autoAck = false;
         channel.basicConsume(QUEUE_NAME, autoAck, deliverCallback, consumerTag -> {});
     }
 
