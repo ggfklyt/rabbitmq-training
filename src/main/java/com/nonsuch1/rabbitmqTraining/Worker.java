@@ -10,6 +10,7 @@ import java.util.concurrent.TimeoutException;
 
 public class Worker {
     private static final String QUEUE_NAME = "hello";
+    private static final String TASK_QUEUE = "task_queue";
 
     public static void main(String[] args) throws IOException, TimeoutException {
         ConnectionFactory factory = new ConnectionFactory();
@@ -18,7 +19,7 @@ public class Worker {
         Channel channel = connection.createChannel();
 
         boolean durable = true;
-        channel.queueDeclare(QUEUE_NAME, durable, false, false, null);
+        channel.queueDeclare(TASK_QUEUE, durable, false, false, null);
         channel.basicQos(1);
         System.out.println(" [*] Waiting for messages. To exit press CTRL+C");
 
@@ -35,7 +36,7 @@ public class Worker {
             }
         });
         boolean autoAck = false;
-        channel.basicConsume(QUEUE_NAME, autoAck, deliverCallback, consumerTag -> {});
+        channel.basicConsume(TASK_QUEUE, autoAck, deliverCallback, consumerTag -> {});
     }
 
     private static void doWork(String task) throws InterruptedException {
